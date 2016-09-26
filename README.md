@@ -50,11 +50,16 @@ func MsgHello(msg interface{}, agent network.InAgent) {
 }
 ```
 
-4. 在[router](https://github.com/k4s/teaserver/tree/master/router)做路由映射.
+4.在[msg/register](https://github.com/k4s/teaserver/tree/master/msg)做通讯消息注册
+```
+process.Processor.Register(&Hello{})
+```
+
+5. 在[router](https://github.com/k4s/teaserver/tree/master/router)做路由映射.
 ```
 process.Processor.SetHandler(&msg.Hello{}, game.MsgHello)
 ```
-5. 如果需要在agent新建或者关闭执行函数，在[game/agent](https://github.com/k4s/teaserver/game/agent.go)里面编写对应的函数.
+6. 如果需要在agent新建或者关闭执行函数，在[game/agent](https://github.com/k4s/teaserver/game/agent.go)里面编写对应的函数.
 
 1) 新建agent：
 ```go
@@ -71,7 +76,7 @@ func closeAgent(agent network.ExAgent) {
 
 ```
 
-6. 执行你的程序：
+7. 执行你的程序：
 ```
 cd teaserver
 go run main.go
