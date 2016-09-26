@@ -9,6 +9,8 @@ type Processor interface {
 	Route(msg interface{}, agent network.ExAgent) error
 	//must goroutine safe
 	SetHandler(msg interface{}, msgHandler MsgHandler)
+	//must goroutine safe
+	Register(msg interface{})
 	// must goroutine safe
 	Unmarshal(data []byte) (interface{}, error)
 	// must goroutine safe

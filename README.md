@@ -35,7 +35,7 @@ Tea ：
 ```
 git clone https://github.com/k4s/teaserver
 ```
-2. 配置[conf](https://github.com/k4s/teaserver/tree/master/conf)目录，选择一种msg协议作为通讯协议，编写对应的[msg](https://github.com/k4s/teaserver/msg)：
+2. 配置[conf](https://github.com/k4s/teaserver/tree/master/conf)目录，选择一种msg协议作为通讯协议，编写对应的[msg](https://github.com/k4s/teaserver/tree/master/msg)：
 ```
 Protocol  = "json"
 ```

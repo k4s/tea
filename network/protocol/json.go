@@ -50,8 +50,6 @@ func (p *JsonProcessor) SetHandler(msg interface{}, msgHandler MsgHandler) {
 		log.Fatal("json message pointer required")
 	}
 
-	p.Register(msg)
-
 	msgID := msgType.Elem().Name()
 	i, ok := p.msgInfo[msgID]
 	if !ok {

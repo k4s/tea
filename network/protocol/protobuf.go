@@ -55,7 +55,6 @@ func (p *ProtoProcessor) Register(msg interface{}) {
 // It's dangerous to call the method on routing or marshaling (unmarshaling)
 func (p *ProtoProcessor) SetHandler(msg interface{}, msgHandler MsgHandler) {
 	msgType := reflect.TypeOf(msg)
-	p.Register(msg)
 
 	id, ok := p.msgID[msgType]
 	if !ok {
