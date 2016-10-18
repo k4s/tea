@@ -31,16 +31,16 @@ Tea ：
 
 #### 基于Tea的开发：
 
-1. 获取tea server base：
+1.获取tea server base：
 ```
 git clone https://github.com/k4s/teaserver
 ```
-2. 配置[conf](https://github.com/k4s/teaserver/tree/master/conf)目录，选择一种msg协议作为通讯协议，编写对应的[msg](https://github.com/k4s/teaserver/tree/master/msg)：
+2.配置[conf](https://github.com/k4s/teaserver/tree/master/conf)目录，选择一种msg协议作为通讯协议，编写对应的[msg](https://github.com/k4s/teaserver/tree/master/msg)：
 ```
 Protocol  = "json"
 ```
 
-3. 在[game](https://github.com/k4s/teaserver/tree/master/game)编写对应msg的处理函数.
+3.在[game](https://github.com/k4s/teaserver/tree/master/game)编写对应msg的处理函数.
 ```go 
 func MsgHello(msg interface{}, agent network.InAgent) {
 	m := msg.(*ms.Hello)
@@ -55,11 +55,11 @@ func MsgHello(msg interface{}, agent network.InAgent) {
 process.Processor.Register(&Hello{})
 ```
 
-5. 在[router](https://github.com/k4s/teaserver/tree/master/router)做路由映射.
+5.在[router](https://github.com/k4s/teaserver/tree/master/router)做路由映射.
 ```
 process.Processor.SetHandler(&msg.Hello{}, game.MsgHello)
 ```
-6. 如果需要在agent新建或者关闭执行函数，在[game/agent](https://github.com/k4s/teaserver/game/agent.go)里面编写对应的函数.
+6.如果需要在agent新建或者关闭执行函数，在[game/agent](https://github.com/k4s/teaserver/game/agent.go)里面编写对应的函数.
 
 1) 新建agent：
 ```go
@@ -76,7 +76,7 @@ func closeAgent(agent network.ExAgent) {
 
 ```
 
-7. 执行你的程序：
+7.执行你的程序：
 ```
 cd teaserver
 go run main.go

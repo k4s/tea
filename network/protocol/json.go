@@ -79,6 +79,7 @@ func (p *JsonProcessor) Route(msg interface{}, agent network.ExAgent) error {
 
 // goroutine safe
 func (p *JsonProcessor) Unmarshal(data []byte) (interface{}, error) {
+	fmt.Println(string(data))
 	var m map[string]json.RawMessage
 	err := json.Unmarshal(data, &m)
 	if err != nil {
