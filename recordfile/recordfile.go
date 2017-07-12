@@ -11,6 +11,8 @@ import (
 )
 
 var Comma = '\t'
+
+// var Comma = ','
 var Comment = '#'
 
 type Index map[interface{}]interface{}

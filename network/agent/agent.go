@@ -1,9 +1,9 @@
 package agent
 
 import (
-	"MoneyTree2/log"
 	"reflect"
 
+	"github.com/k4s/tea/log"
 	"github.com/k4s/tea/network"
 	"github.com/k4s/tea/network/protocol"
 )
@@ -47,7 +47,6 @@ func (a *agent) OnInit() {
 	if a.initFunc != nil {
 		a.initFunc(a)
 	}
-
 }
 
 func (a *agent) OnClose() {
