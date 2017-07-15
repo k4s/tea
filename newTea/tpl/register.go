@@ -8,6 +8,7 @@ import (
 
 func init() {
 	process.Processor.Register(&Login{})
+	process.Processor.Register(&Hello{})
 }
 
 `

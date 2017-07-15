@@ -8,7 +8,7 @@ import (
 
 var (
 	// gate conf
-	Protocol          = "protobuf" //"json"
+	Protocol          = "json" //"protobuf"
 	MaxConnNum        = 100
 	WritingNum        = 2000
 	MaxMsgLen  uint32 = 16384 //8192

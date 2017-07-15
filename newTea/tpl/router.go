@@ -10,6 +10,7 @@ import (
 
 func init() {
 	process.Processor.SetHandler(&msg.Login{}, game.MsgLogin)
+	process.Processor.SetHandler(&msg.Hello{}, game.MsgHello)
 }
 
 `
