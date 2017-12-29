@@ -3,83 +3,71 @@
 
 交流QQ群：376389675
 
-Tea ：
+Tea [V1.0](https://github.com/k4s/tea/tree/v1.0)：
 * 像开发Web一样简单去开发Game.
 * 每个用户走在单个goroutine上，更加适合多核支持并发处理.
 
-#### Tea 的框架：
+Tea [masterr](https://github.com/k4s/tea/tree/master)：
+* 支持多网关，多游戏服 分布式处理.
+* 单路复用.
+* 支持v1.0，leaf 游戏逻辑对接.
 
-```
-┌-----| |---| |---| |---------------| |---| |---| |------┐
-|     | |   | |   | |     Gate      | |   | |   | |      |
-|  ┌--| |---| |---| |---------------| |---| |---| |--┐   |
-|  |  |a|   |a|   |a|               |a|   |a|   |a|  |   |
-|  |  |g|   |g|   |g|   TCP Server  |g|   |g|   |g|  |   |
-|  |  |e|   |e|   |e|      or       |e|   |e|   |e|  |   |
-|  |  |n|   |n|   |n|   WebSocket   |n|   |n|   |n|  |   |
-|  |  |t|   |t|   |t|               |t|   |t|   |t|  |   |
-|  └--| |---| |---| |---------------| |---| |---| |--┘   |
-|  ┌--| |---| |---| |---------------| |---| |---| |--┐   |
-|  |  | |   | |   | |  Msg Process  | |   | |   | |  |   |
-|  └--| |---| |---| |---------------| |---| |---| |--┘   |
-└-----| |---| |---| |---------------| |---| |---| |------┘
-┌-----| |---| |---| |---------------| |---| |---| |------┐
-|                 Goroutine Deal with Msg                |
-└--------------------------------------------------------┘
-```
+
 
 #### 基于Tea的开发：
 
-1.生成项目：
+1.新建生成项目工具newTea：
 ```
 cd github.com/k4s/tea/newTea
 go install
+```
+
+2.生成网关：
+```
 cd $GOPATH
-newTea new appname
+newTea new gate appname
 cd appname
 ```
-2.配置[conf]目录，选择一种msg协议作为通讯协议，编写对应的[msg/process/process.go]：
+
+3.生成游戏服：
+```
+cd $GOPATH
+newTea new game appname
+cd appname
+```
+
+4.配置[config]目录，选择一种msg协议作为通讯协议，对应的[protocol/process.go]：
 ```
 Protocol  = "json"
 ```
 
-3.在[game]编写对应msg的处理函数.
+5.在[hamdle]编写对应msg的处理函数.
 ```go 
-func MsgHello(msg interface{}, agent network.InAgent) {
-	m := msg.(*ms.Hello)
-	fmt.Println("Hello,", m.Name)
-	hi := &ms.Hello{Name: "kas"}
-	agent.WriteMsg(hi)
+func InfoHandle(msg *message.Message, agent network.Agent) {
+	jsonMsg, err := protocol.Processor.Unmarshal(msg.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+	m := jsonMsg.(*ms.Hello)
+	fmt.Println("game:", m)
+	reMsg := ms.Hello{
+		Name: "kkk",
+	}
+	agent.EndHandle(msg, reMsg)
 }
 ```
 
-4.在[msg/register]做通讯消息注册
+6.在[register]做通讯消息注册
 ```
-process.Processor.Register(&Hello{})
+protocol.Processor.Register(&msg.Hello{})
 ```
-
-5.在[router]做路由映射.
+7.在[router]做路由映射.
 ```
-process.Processor.SetHandler(&msg.Hello{}, game.MsgHello)
-```
-6.如果需要在agent新建或者关闭执行函数，在[game/agent]里面编写对应的函数.
-
-1) 新建agent：
-```go
-func initAgent(agent network.ExAgent) {
-	fmt.Println("InitFunc")
-}
-```
-2) 关闭agent：
-
-```go
-func closeAgent(agent network.ExAgent) {
-	fmt.Println("CloseFunc")
-}
-
+protocol.Processor.SetHandler(&msg.Hello{}, handle.InfoHandle)
 ```
 
-7.执行你的程序：
+
+8.分别执行网关和游戏服：
 ```
 cd appname
 go run main.go
