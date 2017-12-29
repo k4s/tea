@@ -16,69 +16,99 @@ var appname string
 var crupath, _ = os.Getwd()
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("newTea new appname")
+	if len(os.Args) != 3 {
+		log.Debug("newTea gate appname Or newTea gameserver appname")
 		return
 	}
 	switch os.Args[1] {
-	case "new":
+	case "gate":
+		initVar(os.Args[2])
+		newGate()
+	case "gameserver":
 		initVar(os.Args[2])
 		appname = os.Args[2]
-		newapp(appname)
+		newGameserver()
 	}
 }
 
-func newapp(args string) {
-	log.Debug("[tea] Create a tea project named `%s` in the `%s` path.", appname, crupath)
+func newGate() {
+	log.Debug("[tea] Create a tea Gateway named `%s` in the `%s` path.", appname, crupath)
 	if isExist(crupath) {
 		log.Debug("[tea] The project path has conflic, do you want to build in: %s\n", crupath)
 		log.Debug("[tea] Do you want to overwrite it? [(yes|no) or (y|n)]  ")
 		if !askForConfirmation() {
-			log.Fatal("[tea] Cancel...")
+			log.Fatal("[tea] New Gateway Cancel...")
 			return
 		}
 	}
-
-	log.Debug("[tea] Start create project...")
+	log.Debug("[tea] Start create Gateway...")
 
 	//生成配置文件
 	makedir("config")
-	writefile(crupath+"/config/config.go", replaceAppname(tpl.ConfigStr))
+	writefile(crupath+"/config/config.go", replaceAppname(tpl.GateConfigStr))
+
+	//生成main文件
+	writefile(crupath+"/main.go", replaceAppname(tpl.GateMainStr))
+
+	log.Debug("[tea] Create gate successful")
+
+	if err := os.Chdir(crupath); err != nil {
+		log.Fatal("[tea] Create gateway fail: %v", err)
+	}
+
+}
+
+func newGameserver() {
+	log.Debug("[tea] Create a tea Gameserver named `%s` in the `%s` path.", appname, crupath)
+	if isExist(crupath) {
+		log.Debug("[tea] The project path has conflic, do you want to build in: %s\n", crupath)
+		log.Debug("[tea] Do you want to overwrite it? [(yes|no) or (y|n)]  ")
+		if !askForConfirmation() {
+			log.Fatal("[tea] New Gameserver Cancel...")
+			return
+		}
+	}
+	log.Debug("[tea] Start create Gameserver...")
+
+	//生成配置文件
+	makedir("config")
+	writefile(crupath+"/config/config.go", replaceAppname(tpl.GameConfigStr))
 
 	//生成游戏逻辑文件
-	makedir("game")
-	writefile(crupath+"/game/game.go", replaceAppname(tpl.GameStr))
-	writefile(crupath+"/game/agent.go", replaceAppname(tpl.AgentStr))
-
-	//生成网关文件
-	makedir("gate")
-	writefile(crupath+"/gate/gate.go", replaceAppname(tpl.GateStr))
+	makedir("handle")
+	writefile(crupath+"/handle/handle.go", replaceAppname(tpl.HandleStr))
 
 	//生成日志文件
 	makedir("log/logdata")
 	writefile(crupath+"/log/log.go", replaceAppname(tpl.LogStr))
 
 	//生成消息文件
-	makedir("msg/process")
-	writefile(crupath+"/msg/process/process.go", replaceAppname(tpl.ProcessStr))
+	makedir("msg")
 	writefile(crupath+"/msg/msg.go", replaceAppname(tpl.MsgStr))
-	writefile(crupath+"/msg/register.go", replaceAppname(tpl.RegisterStr))
-	writefile(crupath+"/msg/userdata.go", replaceAppname(tpl.UserdataStr))
+
+	//生成协议文件
+	makedir("protocol")
+	writefile(crupath+"/protocol/process.go", replaceAppname(tpl.ProtocolStr))
+
+	//生成注册文件
+	makedir("register")
+	writefile(crupath+"/register/register.go", replaceAppname(tpl.RegisterStr))
 
 	//生成路由文件
 	makedir("router")
 	writefile(crupath+"/router/router.go", replaceAppname(tpl.RouterStr))
 
 	//生成main文件
-	writefile(crupath+"/main.go", replaceAppname(tpl.MainStr))
+	writefile(crupath+"/main.go", replaceAppname(tpl.GameMainStr))
 
-	log.Debug("[tea] Create was successful")
+	log.Debug("[tea] Create gameserver successful")
 
 	if err := os.Chdir(crupath); err != nil {
-		log.Fatal("[tea] Create project fail: %v", err)
+		log.Fatal("[tea] Create gameserver fail: %v", err)
 	}
 
 }
+
 func initVar(args string) {
 	var dir string
 	dir, appname = filepath.Split(args)
@@ -127,7 +157,7 @@ func writefile(filename string, writeStr string) {
 	var f *os.File
 	var err error
 
-	if checkFileIsExist(filename) { //如果文件存在
+	if isExist(filename) { //如果文件存在
 		f, err = os.OpenFile(filename, os.O_RDWR, 0666) //打开文件
 		if err != nil {
 			log.Fatal("[tea] create has a error :%s", err)

@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/k4s/tea/log"
+	"github.com/k4s/tea/message"
 	"github.com/k4s/tea/network"
 )
 
@@ -65,8 +66,12 @@ func (p *ProtoProcessor) SetHandler(msg interface{}, msgHandler MsgHandler) {
 }
 
 // goroutine safe
-func (p *ProtoProcessor) Route(msg interface{}, agent network.ExAgent) error {
-	msgType := reflect.TypeOf(msg)
+func (p *ProtoProcessor) Route(msg *message.Message, agent network.Agent) error {
+	m, err := p.Unmarshal(msg.Body)
+	if err != nil {
+		return fmt.Errorf("json message Unmarshal error: %v", err)
+	}
+	msgType := reflect.TypeOf(m)
 	id, ok := p.msgID[msgType]
 	if !ok {
 		return fmt.Errorf("message %s not registered", msgType)

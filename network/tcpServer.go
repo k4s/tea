@@ -1,39 +1,33 @@
-package net
+package network
 
 import (
+	"fmt"
 	"net"
 	"sync"
 	"time"
 
+	. "github.com/k4s/tea"
 	"github.com/k4s/tea/log"
-	"github.com/k4s/tea/network/agent"
 )
 
 type TCPServer struct {
 	//server address："127.0.0.1:8080"
 	Addr string
-	//Max connections number
-	MaxConnNum int
-	//writing byte number
-	WritingNum int
-	//connections number
+
 	conns ConnSet
 	//connections mutex
 	mutexConns sync.Mutex
 	//listen waitGroup
 	wglisten sync.WaitGroup
 	//writing waitGroup
-	wgConns  sync.WaitGroup
-	Timeout  time.Duration
-	listener net.Listener
-	NewAgent func(*TCPConn) agent.InAgent
+	wgConns sync.WaitGroup
 
-	// msg parser
-	LenMsgLen    int
-	MinMsgLen    uint32
-	MaxMsgLen    uint32
-	LittleEndian bool
-	msgParser    *MsgParser
+	listener net.Listener
+	NewAgent func(*TCPConn, bool) Agent
+	Agents   chan Agent
+
+	withID bool
+	opts   Options
 }
 
 func (server *TCPServer) Start() {
@@ -46,25 +40,36 @@ func (server *TCPServer) init() {
 	if err != nil {
 		log.Fatal("%v", err)
 	}
-	if server.MaxConnNum <= 0 {
-		server.MaxConnNum = 100
-		log.Release("invalid MaxConnNum, reset to %v", server.MaxConnNum)
+	server.Agents = make(chan Agent, 100)
+	server.opts = make(Options)
+	for n, v := range server.opts {
+		switch n {
+		case OptionMinMsgLen,
+			OptionMaxMsgLen,
+			OptionConnNum,
+			OptionMsgNum,
+			OptionLittleEndian:
+			server.opts.SetOption(n, v)
+		}
 	}
-	if server.WritingNum <= 0 {
-		server.WritingNum = 100
-		log.Release("invalid WritingNum, reset to %v", server.WritingNum)
+
+	if _, err := server.opts.GetOption(OptionConnNum); err != nil {
+		server.opts.SetOption(OptionConnNum, 100)
 	}
+
+	if _, err := server.opts.GetOption(OptionMsgNum); err != nil {
+		server.opts.SetOption(OptionMsgNum, 100)
+	}
+
+	if _, err := server.opts.GetOption(OptionLittleEndian); err != nil {
+		server.opts.SetOption(OptionLittleEndian, true)
+	}
+
 	if server.NewAgent == nil {
 		log.Fatal("NewAgent must not be nil")
 	}
 	server.listener = listener
 	server.conns = make(ConnSet)
-
-	// msg parser
-	msgParser := NewMsgParser()
-	msgParser.SetMsgLen(server.LenMsgLen, server.MinMsgLen, server.MaxMsgLen)
-	msgParser.SetByteOrder(server.LittleEndian)
-	server.msgParser = msgParser
 
 }
 
@@ -94,7 +99,8 @@ func (server *TCPServer) run() {
 		tempDelay = 0
 
 		server.mutexConns.Lock()
-		if len(server.conns) >= server.MaxConnNum {
+		connNum, _ := server.opts.GetOption(OptionConnNum)
+		if len(server.conns) >= connNum.(int) {
 			server.mutexConns.Unlock()
 			conn.Close()
 			log.Debug("too many connections")
@@ -107,22 +113,44 @@ func (server *TCPServer) run() {
 
 		server.wgConns.Add(1)
 
-		tcpConn := newTCPConn(conn, server.WritingNum, server.msgParser)
-		agent := server.NewAgent(tcpConn)
+		var tcpConn *TCPConn
+		if server.withID {
+			tcpConn = newAgentTCPConn(conn, server.opts)
+		} else {
+			tcpConn = newSessionTCPConn(conn, server.opts)
+		}
+
+		agent := server.NewAgent(tcpConn, server.withID)
 
 		go func() {
+			fmt.Println("有新连接写入")
+			server.Agents <- agent
 			agent.Run()
-			tcpConn.Close()
+			agent.Close()
 
 			server.mutexConns.Lock()
 			delete(server.conns, conn)
 			server.mutexConns.Unlock()
-			agent.OnClose()
 
 			server.wgConns.Done()
 		}()
 	}
 
+}
+
+func (server *TCPServer) SetWithID(isbool bool) {
+	server.withID = isbool
+}
+
+func (server *TCPServer) SetOpts(opts Options) {
+	server.opts = opts
+}
+
+func (server *TCPServer) GetAgent() Agent {
+	defer func() {
+		fmt.Println("有新连接取出")
+	}()
+	return <-server.Agents
 }
 
 func (server *TCPServer) Close() {

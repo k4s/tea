@@ -1,14 +1,12 @@
 package tpl
 
-var RegisterStr string = `package msg
+var RegisterStr string = `package Register
 
 import (
-	"<<DIR>>/msg/process"
+	"<<DIR>>/msg"
+	"<<DIR>>/protocol"
 )
 
-func init() {
-	process.Processor.Register(&Login{})
-	process.Processor.Register(&Hello{})
-}
-
-`
+func InitRegister() {
+	protocol.Processor.Register(&msg.Hello{})
+}`

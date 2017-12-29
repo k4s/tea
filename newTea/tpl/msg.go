@@ -6,9 +6,4 @@ var MsgStr string = `package msg
 type Hello struct {
 	Name string
 }
-
-//用户认证
-type Login struct {
-	User     string
-	Password string
-}`
+`

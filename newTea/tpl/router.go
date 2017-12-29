@@ -3,14 +3,12 @@ package tpl
 var RouterStr string = `package router
 
 import (
-	"<<DIR>>/game"
+	"<<DIR>>/handle"
 	"<<DIR>>/msg"
-	"<<DIR>>/msg/process"
+	"<<DIR>>/protocol"
 )
 
-func init() {
-	process.Processor.SetHandler(&msg.Login{}, game.MsgLogin)
-	process.Processor.SetHandler(&msg.Hello{}, game.MsgHello)
+func InitRouter() {
+	protocol.Processor.SetHandler(&msg.Hello{}, handle.InfoHandle)
 }
-
 `

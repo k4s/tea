@@ -1,12 +1,13 @@
 package tpl
 
-var ProcessStr string = `package process
+var ProtocolStr string = `package protocol
 
 import (
 	"log"
 
-	"github.com/k4s/tea/network/protocol"
 	"<<DIR>>/config"
+
+	"github.com/k4s/tea/protocol"
 )
 
 var Processor protocol.Processor
@@ -22,5 +23,4 @@ func init() {
 	}
 
 }
-
 `

@@ -7,6 +7,7 @@ import (
 	"reflect"
 
 	"github.com/k4s/tea/log"
+	"github.com/k4s/tea/message"
 	"github.com/k4s/tea/network"
 )
 
@@ -60,8 +61,12 @@ func (p *JsonProcessor) SetHandler(msg interface{}, msgHandler MsgHandler) {
 }
 
 // goroutine safe
-func (p *JsonProcessor) Route(msg interface{}, agent network.ExAgent) error {
-	msgType := reflect.TypeOf(msg)
+func (p *JsonProcessor) Route(msg *message.Message, agent network.Agent) error {
+	m, err := p.Unmarshal(msg.Body)
+	if err != nil {
+		return fmt.Errorf("json message Unmarshal error: %v", err)
+	}
+	msgType := reflect.TypeOf(m)
 	if msgType == nil || msgType.Kind() != reflect.Ptr {
 		return errors.New("json message pointer required")
 	}
@@ -79,7 +84,7 @@ func (p *JsonProcessor) Route(msg interface{}, agent network.ExAgent) error {
 
 // goroutine safe
 func (p *JsonProcessor) Unmarshal(data []byte) (interface{}, error) {
-	fmt.Println(string(data))
+	fmt.Println("Unmarshal:", string(data))
 	var m map[string]json.RawMessage
 	err := json.Unmarshal(data, &m)
 	if err != nil {

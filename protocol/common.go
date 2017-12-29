@@ -3,6 +3,7 @@ package protocol
 import (
 	"reflect"
 
+	"github.com/k4s/tea/message"
 	"github.com/k4s/tea/network"
 )
 
@@ -11,4 +12,4 @@ type MsgInfo struct {
 	msgHandler MsgHandler
 }
 
-type MsgHandler func(interface{}, network.ExAgent)
+type MsgHandler func(*message.Message, network.Agent)

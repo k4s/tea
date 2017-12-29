@@ -1,22 +1,16 @@
 package tpl
 
-var GateStr string = `package gate
+var GateMainStr string = `package main
 
 import (
-	"github.com/k4s/tea/gate"
-	"<<DIR>>/msg/process"
 	"<<DIR>>/config"
+
+	"github.com/k4s/tea/gate"
 )
 
-var Gate = &gate.Gate{
-	MaxConnNum:   config.MaxConnNum,
-	WritingNum:   config.WritingNum,
-	MaxMsgLen:    config.MaxMsgLen,
-	WSAddr:       config.WSAddr,
-	HTTPTimeout:  config.HTTPTimeout,
-	TCPAddr:      config.TCPAddr,
-	LenMsgLen:    config.LenMsgLen,
-	LittleEndian: config.LittleEndian,
-	Processor:    process.Processor,
+func main() {
+	gate := gate.NewGate(config.CTCPAddr, config.STCPAddr)
+	gate.SetOpts(config.GetOpts())
+	gate.Run()
 }
 `
