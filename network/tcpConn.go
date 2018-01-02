@@ -35,7 +35,7 @@ func newAgentTCPConn(c net.Conn, opts Options) *TCPConn {
 	tcpConn.c = c
 	tcpConn.writeMsg = make(chan *message.Message, 100)
 	tcpConn.opts = make(Options)
-	// tcpConn.msgParser = msgParser
+
 	for n, v := range opts {
 		switch n {
 		case OptionMinMsgLen,
@@ -45,15 +45,8 @@ func newAgentTCPConn(c net.Conn, opts Options) *TCPConn {
 			tcpConn.opts.SetOption(n, v)
 		}
 	}
-	if maxRW, err := tcpConn.opts.GetOption(OptionMaxRW); err != nil {
+	if _, err := tcpConn.opts.GetOption(OptionMaxRW); err != nil {
 		tcpConn.opts.SetOption(OptionMaxRW, 4096)
-	} else {
-		switch maxRW := maxRW.(type) {
-		case uint32:
-			if maxRW <= 0 {
-				tcpConn.opts.SetOption(OptionMaxRW, 4096)
-			}
-		}
 	}
 
 	go func() {
@@ -89,15 +82,8 @@ func newSessionTCPConn(c net.Conn, opts Options) *TCPConn {
 			tcpConn.opts.SetOption(n, v)
 		}
 	}
-	if maxRW, err := tcpConn.opts.GetOption(OptionMaxRW); err != nil {
+	if _, err := tcpConn.opts.GetOption(OptionMaxRW); err != nil {
 		tcpConn.opts.SetOption(OptionMaxRW, 4096)
-	} else {
-		switch maxRW := maxRW.(type) {
-		case uint32:
-			if maxRW <= 0 {
-				tcpConn.opts.SetOption(OptionMaxRW, 4096)
-			}
-		}
 	}
 
 	go func() {

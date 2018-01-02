@@ -1,9 +1,9 @@
 package gameserver
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
+	"time"
 
 	. "github.com/k4s/tea"
 	"github.com/k4s/tea/log"
@@ -28,6 +28,10 @@ func NewGameserver(addr string, processor protocol.Processor) *Gameserver {
 		Processor: processor,
 	}
 	return gate
+}
+
+func (g *Gameserver) SetOpts(opts Options) {
+	g.opts = opts
 }
 
 func (g *Gameserver) Run() {
@@ -74,10 +78,9 @@ func (g *Gameserver) WaitAgent(client *network.TCPClient) {
 	for {
 		agent = client.GetAgent()
 		if agent != nil {
-			fmt.Println("取出不为空")
 			break
 		}
-		fmt.Println("取出为空")
+		time.Sleep(time.Millisecond * 300)
 	}
 	go g.RunAgent(agent)
 }

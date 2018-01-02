@@ -7,7 +7,7 @@ Tea [V1.0](https://github.com/k4s/tea/tree/v1.0)：
 * 像开发Web一样简单去开发Game.
 * 每个用户走在单个goroutine上，更加适合多核支持并发处理.
 
-Tea [masterr](https://github.com/k4s/tea/tree/master)：
+Tea [master](https://github.com/k4s/tea/tree/master)：
 * 支持多网关，多游戏服 分布式处理.
 * 单路复用.
 * 支持v1.0，leaf 游戏逻辑对接.

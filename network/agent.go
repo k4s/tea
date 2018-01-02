@@ -34,7 +34,11 @@ type agent struct {
 }
 
 func NewAgent(conn Conn, withID bool) *agent {
-	return &agent{conn: conn, withID: withID, isClose: make(chan bool), recvMsg: make(chan *message.Message, 100)}
+	return &agent{conn: conn,
+		withID:  withID,
+		isClose: make(chan bool),
+		recvMsg: make(chan *message.Message, 100),
+	}
 }
 
 func (a *agent) Run() {

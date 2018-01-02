@@ -39,47 +39,32 @@ func (client *TCPClient) init() {
 	client.Lock()
 	defer client.Unlock()
 	client.opts = make(Options)
-	if connNum, err := client.opts.GetOption(OptionConnNum); err != nil {
-		switch connNum := connNum.(type) {
-		case int:
-			if connNum <= 0 {
-				client.opts.SetOption(OptionConnNum, 1)
-			}
+	for n, v := range client.opts {
+		switch n {
+		case OptionMinMsgLen,
+			OptionMaxMsgLen,
+			OptionConnNum,
+			OptionMsgNum,
+			OptionConnInterval,
+			OptionLittleEndian:
+			client.opts.SetOption(n, v)
 		}
-	} else {
+	}
+
+	if _, err := client.opts.GetOption(OptionConnNum); err != nil {
 		client.opts.SetOption(OptionConnNum, 1)
 	}
 
-	if connInterval, err := client.opts.GetOption(OptionConnInterval); err != nil {
+	if _, err := client.opts.GetOption(OptionConnInterval); err != nil {
 		client.opts.SetOption(OptionConnInterval, 3*time.Second)
-	} else {
-		switch connInterval := connInterval.(type) {
-		case int:
-			if connInterval <= 0 {
-				client.opts.SetOption(OptionConnInterval, 3*time.Second)
-			}
-		}
 	}
 
-	if msgNum, err := client.opts.GetOption(OptionMsgNum); err != nil {
+	if _, err := client.opts.GetOption(OptionMsgNum); err != nil {
 		client.opts.SetOption(OptionMsgNum, 100)
-	} else {
-		switch msgNum := msgNum.(type) {
-		case int:
-			if msgNum <= 0 {
-				client.opts.SetOption(OptionMsgNum, 100)
-			}
-		}
 	}
-	if isLittleEndian, err := client.opts.GetOption(OptionLittleEndian); err != nil {
+
+	if _, err := client.opts.GetOption(OptionLittleEndian); err != nil {
 		client.opts.SetOption(OptionLittleEndian, true)
-	} else {
-		switch isLittleEndian := isLittleEndian.(type) {
-		case bool:
-			if !isLittleEndian {
-				client.opts.SetOption(OptionLittleEndian, true)
-			}
-		}
 	}
 
 	if client.NewAgent == nil {

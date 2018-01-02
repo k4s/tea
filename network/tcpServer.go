@@ -1,7 +1,6 @@
 package network
 
 import (
-	"fmt"
 	"net"
 	"sync"
 	"time"
@@ -123,7 +122,6 @@ func (server *TCPServer) run() {
 		agent := server.NewAgent(tcpConn, server.withID)
 
 		go func() {
-			fmt.Println("有新连接写入")
 			server.Agents <- agent
 			agent.Run()
 			agent.Close()
@@ -147,9 +145,6 @@ func (server *TCPServer) SetOpts(opts Options) {
 }
 
 func (server *TCPServer) GetAgent() Agent {
-	defer func() {
-		fmt.Println("有新连接取出")
-	}()
 	return <-server.Agents
 }
 
