@@ -25,14 +25,14 @@ go install
 2.生成网关：
 ```
 cd $GOPATH
-newTea new gate appname
+newTea gate appname
 cd appname
 ```
 
 3.生成游戏服：
 ```
 cd $GOPATH
-newTea new game appname
+newTea gameserver appname
 cd appname
 ```
 
