@@ -22,7 +22,7 @@ const (
 	OptionMsgNum = "Msg-Number"
 
 	//消息长度
-	OptioneMsgLen = "Msg-lenght"
+	// OptioneMsgLen = "Msg-lenght"
 
 	//最小消息长度
 	OptionMinMsgLen = "Msg-Min-lenght"
@@ -56,7 +56,7 @@ func (opts Options) SetOption(n string, v interface{}) error {
 		default:
 			return ErrBadValue
 		}
-	case OptionConnNum, OptionConnInterval, OptionMsgNum, OptioneMsgLen:
+	case OptionConnNum, OptionConnInterval, OptionMsgNum:
 		switch v := v.(type) {
 		case int:
 			opts[n] = v

@@ -9,8 +9,9 @@ import (
 )
 
 func main() {
-	gate := gate.NewGate(config.CTCPAddr, config.STCPAddr)
+	gate := gate.NewGate(config.Appconfig.ClientAddr, config.Appconfig.GameServeraddr)
 	gate.SetOpts(config.GetOpts())
 	gate.Run()
 }
+
 `

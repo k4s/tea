@@ -46,6 +46,7 @@ func newGate() {
 	//生成配置文件
 	makedir("config")
 	writefile(crupath+"/config/config.go", replaceAppname(tpl.GateConfigStr))
+	writefile(crupath+"/config/config.json", replaceAppname(tpl.GateConfigJson))
 
 	//生成main文件
 	writefile(crupath+"/main.go", replaceAppname(tpl.GateMainStr))
@@ -73,6 +74,7 @@ func newGameserver() {
 	//生成配置文件
 	makedir("config")
 	writefile(crupath+"/config/config.go", replaceAppname(tpl.GameConfigStr))
+	writefile(crupath+"/config/config.json", replaceAppname(tpl.GameConfigJson))
 
 	//生成游戏逻辑文件
 	makedir("handle")

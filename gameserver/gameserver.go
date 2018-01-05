@@ -34,6 +34,22 @@ func (g *Gameserver) SetOpts(opts Options) {
 	g.opts = opts
 }
 
+//GameRun multi game run
+func GameRun(gameserver []*Gameserver) {
+	for _, g := range gameserver {
+		log.Release("Gameserver Server running by %s", g.TCPAddr)
+		g.Start()
+	}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	sig := <-c
+	for _, g := range gameserver {
+		g.Stop()
+	}
+	log.Release("Gameserver closing by (signal: %v)", sig)
+}
+
+//Run single game run
 func (g *Gameserver) Run() {
 	log.Release("Gameserver Server running by %s", g.TCPAddr)
 	g.Start()

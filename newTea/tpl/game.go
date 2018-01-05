@@ -17,6 +17,10 @@ func init() {
 }
 
 func main() {
-	game := gameserver.NewGameserver(config.GateTCPAddr, protocol.Processor)
-	game.Run()
+	games := make([]*gameserver.Gameserver, 0)
+	for _, addr := range config.Appconfig.GateTCPAddr {
+		game := gameserver.NewGameserver(addr, protocol.Processor)
+		games = append(games, game)
+	}
+	gameserver.GameRun(games)
 }`

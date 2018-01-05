@@ -13,14 +13,15 @@ import (
 var Processor protocol.Processor
 
 func init() {
-	switch config.Protocol {
+	switch config.Appconfig.Protocol {
 	case "json":
 		Processor = protocol.NewJson()
 	case "protobuf":
 		Processor = protocol.NewProto()
 	default:
-		log.Fatal("unknown Protocol: %v", config.Protocol)
+		log.Fatal("unknown Protocol: %v", config.Appconfig.Protocol)
 	}
 
 }
+
 `

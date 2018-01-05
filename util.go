@@ -1,7 +1,9 @@
 package tea
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"runtime"
 	"strings"
 	"time"
@@ -54,4 +56,16 @@ func DrainChannel(ch chan<- *message.Message, expire time.Time) bool {
 		}
 		time.Sleep(dur)
 	}
+}
+
+func InitConfigFile(filePath string, config interface{}) error {
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(content, config)
+	if err != nil {
+		return err
+	}
+	return nil
 }
