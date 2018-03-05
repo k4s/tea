@@ -25,7 +25,6 @@ type TCPClient struct {
 	isClose bool
 	withID  bool
 	opts    Options
-
 	// msgParser *MsgParser
 }
 

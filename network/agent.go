@@ -94,11 +94,11 @@ func (a *agent) EndHandle(oldMsg *message.Message, msg interface{}) {
 	sz := len(data)
 	var newMsg *message.Message
 	if oldMsg.ConnID != 0 {
-		newMsg = message.NewMessage(int(+8))
+		newMsg = message.NewMessage(int(sz+8))
 		newMsg.ConnID = oldMsg.ConnID
 		newMsg.Body = newMsg.Body[0:sz]
 	} else {
-		newMsg = message.NewMessage(int(+4))
+		newMsg = message.NewMessage(int(sz+4))
 		newMsg.Body = newMsg.Body[0:sz]
 	}
 	newMsg.Body = data

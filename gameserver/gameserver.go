@@ -49,17 +49,6 @@ func GameRun(gameserver []*Gameserver) {
 	log.Release("Gameserver closing by (signal: %v)", sig)
 }
 
-//Run single game run
-func (g *Gameserver) Run() {
-	log.Release("Gameserver Server running by %s", g.TCPAddr)
-	g.Start()
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, os.Kill)
-	sig := <-c
-	g.Stop()
-	log.Release("Gameserver closing by (signal: %v)", sig)
-}
-
 func (g *Gameserver) Start() {
 	var tcpClient *network.TCPClient
 	if g.TCPAddr != "" {
@@ -94,6 +83,7 @@ func (g *Gameserver) WaitAgent(client *network.TCPClient) {
 	for {
 		agent = client.GetAgent()
 		if agent != nil {
+			log.Debug("get a agent")
 			break
 		}
 		time.Sleep(time.Millisecond * 300)
